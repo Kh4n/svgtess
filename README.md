@@ -1,2 +1,2 @@
 # svgtess
-Tessellation from SVGs into OpenGL compatible vertex output
+Tessellation from SVG compliant paths to OpenGL compatible vertex output
