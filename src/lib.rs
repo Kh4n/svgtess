@@ -12,7 +12,7 @@ pub fn is_to_right(v1: cgmath::Vector2<f32>, v2: cgmath::Vector2<f32>) -> bool {
     (cgmath::dot(v1, v2r90) > 0.0)
 }
 
-pub fn intersection(
+fn intersection(
     pa0: cgmath::Vector2<f32>, pa1: cgmath::Vector2<f32>, 
     pb0: cgmath::Vector2<f32>, pb1: cgmath::Vector2<f32>
     ) -> cgmath::Vector2<f32> {
