@@ -32,8 +32,8 @@ fn intersection(
     cgmath::Vector2::new(x, y)
 }
 
-pub fn path_tesselate(points: &Vec<cgmath::Vector2<f32>>, thickness: f32) -> (Vec<Vertex>, Vec<u16>) {
-    let mut vertices = Vec::<Vertex>::new();
+pub fn path_tessellate(points: &Vec<cgmath::Vector2<f32>>, thickness: f32) -> (Vec<cgmath::Vector2<f32>>, Vec<u16>) {
+    let mut vertices = Vec::<cgmath::Vector2<f32>>::new();
     let mut indices = Vec::<u16>::new();
     //t: short for triangles. need to keep track to offset the index buffer
     let mut v: u16 = 0;
@@ -50,8 +50,8 @@ pub fn path_tesselate(points: &Vec<cgmath::Vector2<f32>>, thickness: f32) -> (Ve
 
     let pa0 = (perpendicular1 * 0.5 * thickness) + points[0];
     let pb0 = (perpendicular1 * -0.5 * thickness) + points[0];
-    vertices.push(Vertex{pos: [pa0.x, pa0.y, 0.0, 1.0], color: [0.0, 0.0, 1.0]});
-    vertices.push(Vertex{pos: [pb0.x, pb0.y, 0.0, 1.0], color: [0.0, 1.0, 1.0]});
+    vertices.push(pa0);
+    vertices.push(pb0);
     v += 2;
     let mut i = 0;
     for i in 0..(points.len() - 2) {
@@ -64,8 +64,8 @@ pub fn path_tesselate(points: &Vec<cgmath::Vector2<f32>>, thickness: f32) -> (Ve
             perpendicular1 = cgmath::Vector2::<f32>::new(vector_dir1.y, -vector_dir1.x).normalize();
             perpendicular2 = cgmath::Vector2::<f32>::new(vector_dir2.y, -vector_dir2.x).normalize();
         }
-        let pa0 = cgmath::Vector2::new(vertices[(v - 2) as usize].pos[0], vertices[(v - 2) as usize].pos[1]);
-        let pb0 = cgmath::Vector2::new(vertices[(v - 1) as usize].pos[0], vertices[(v - 1) as usize].pos[1]);
+        let pa0 = cgmath::Vector2::new(vertices[(v - 2) as usize].x, vertices[(v - 2) as usize].y);
+        let pb0 = cgmath::Vector2::new(vertices[(v - 1) as usize].x, vertices[(v - 1) as usize].y);
         let pa1 = (perpendicular1 * 0.5     * thickness) + points[i + 1];
         let pb1 = (perpendicular1 * -0.5 * thickness) + points[i + 1];
 
@@ -80,10 +80,10 @@ pub fn path_tesselate(points: &Vec<cgmath::Vector2<f32>>, thickness: f32) -> (Ve
         let oaf = (perpendicular1 * thickness) + ij;
         let oas = (perpendicular2 * thickness) + ij;
 
-        vertices.push(Vertex{pos: [oaf.x, oaf.y, 0.0, 1.0], color: [0.0, 1.0, 1.0]});
-        vertices.push(Vertex{pos: [oj.x,  oj.y,  0.0, 1.0], color: [0.0, 1.0, 1.0]});
-        vertices.push(Vertex{pos: [oas.x, oas.y, 0.0, 1.0], color: [0.0, 1.0, 1.0]});
-        vertices.push(Vertex{pos: [ij.x,  ij.y,  0.0, 1.0], color: [0.0, 1.0, 1.0]});
+        vertices.push(oaf);
+        vertices.push(oj);
+        vertices.push(oas);
+        vertices.push(ij);
         v += 4;
 
         indices.extend(&[
@@ -94,6 +94,6 @@ pub fn path_tesselate(points: &Vec<cgmath::Vector2<f32>>, thickness: f32) -> (Ve
         ]);
     }
     
-    println!("{:?}", i);
+    println!("{:?}", vertices);
     (vertices, indices)
 }

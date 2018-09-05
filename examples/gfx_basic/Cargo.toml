@@ -1,5 +1,5 @@
 [package]
-name = "svgtessEX"
+name = "sdl2test"
 version = "0.1.0"
 authors = ["khanp"]
 
@@ -8,8 +8,5 @@ sdl2 = { version = "*", features = ["bundled", "static-link"] }
 gfx = "*"
 gfx_window_sdl = "*"
 cgmath = "0.16.1"
-svgtess = {path = "../../", version = "*"}
 
-[[bin]]
-name = "gfx_basic"
-path = "src/main.rs"
+svgtess = {path = "../../", version = "*"}

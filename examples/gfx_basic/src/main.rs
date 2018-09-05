@@ -8,6 +8,7 @@ extern crate svgtess;
 use gfx::Device;
 use gfx::traits::FactoryExt;
 use cgmath::prelude::*;
+use svgtess::path_tessellate;
 
 pub type ColorFormat = gfx::format::Srgba8;
 pub type DepthFormat = gfx::format::DepthStencil;
@@ -65,9 +66,14 @@ pub fn main() {
         cgmath::Vector2::<f32>::new(0.0, 0.0), cgmath::Vector2::<f32>::new(0.8, 0.0), cgmath::Vector2::<f32>::new(0.8, -0.8),
         cgmath::Vector2::<f32>::new(0.4, -0.8), cgmath::Vector2::<f32>::new(0.4, -0.4)
         ];
-    let (path, pathindices) = path_tesselate(&line1, 0.05);
+    let (ptess, pathindices) = path_tessellate(&line1, 0.05);
+    let mut pathtessellation = Vec::<Vertex>::new();
+    for i in 0..ptess.len() {
+        pathtessellation.push(Vertex { pos: [ptess[i].x, ptess[i].y, 0.0, 1.0], color: [1.0, 0.0, 0.0]});
+    }
 
-    let (vertex_buffer, slice) = factory.create_vertex_buffer_with_slice(&path[..], &pathindices[..]);
+
+    let (vertex_buffer, slice) = factory.create_vertex_buffer_with_slice(&pathtessellation[..], &pathindices[..]);
     let transform_buffer = factory.create_constant_buffer(1);
     let data = pipe::Data {
         vbuf: vertex_buffer,
@@ -104,7 +110,7 @@ pub fn main() {
 
         window.gl_swap_window();
         device.cleanup();
-    }
+    }/*
     let vector = cgmath::Vector2::<f32>::new(3.0, 4.0);
     let mut vector2 = cgmath::Vector2::<f32>::new(1.0, 4.0);
     println!("{:?}\n", vector.normalize() - vector2);
@@ -114,7 +120,7 @@ pub fn main() {
     let lineb0 = cgmath::Vector2::<f32>::new(-1.0, 0.1);
     let lineb1 = cgmath::Vector2::<f32>::new(-0.5, -0.9);
 
-    let inters = intersection(linea0, linea1, lineb0, lineb1);
+    //let inters = intersection(linea0, linea1, lineb0, lineb1);
     let _tmp = cgmath::Vector2::new(-lineb1.y, lineb1.x);
-    println!("{:?}\n", inters);
+    //println!("{:?}\n", inters);*/
 }
