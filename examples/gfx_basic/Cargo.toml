@@ -1,5 +1,5 @@
 [package]
-name = "sdl2test"
+name = "gfx_basic"
 version = "0.1.0"
 authors = ["khanp"]
 
