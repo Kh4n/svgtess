@@ -5,3 +5,10 @@ authors = ["khanp"]
 
 [dependencies]
 cgmath = "0.16.1"
+
+[workspace]
+members = ["examples/basic"]
+
+[[example]]
+name = "gfx_basic"
+path = "examples/basic"
