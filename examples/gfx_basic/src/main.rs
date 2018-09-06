@@ -64,7 +64,7 @@ pub fn main() {
 
     let line1 = vec![
         cgmath::Vector2::<f32>::new(0.0, 0.0), cgmath::Vector2::<f32>::new(0.8, 0.0), cgmath::Vector2::<f32>::new(0.8, -0.8),
-        cgmath::Vector2::<f32>::new(0.4, -0.8), cgmath::Vector2::<f32>::new(0.4, -0.4)
+        cgmath::Vector2::<f32>::new(0.4, -0.9), cgmath::Vector2::<f32>::new(0.4, -0.4)
         ];
     let (ptess, pathindices) = path_tessellate(&line1, 0.05);
     let mut pathtessellation = Vec::<Vertex>::new();

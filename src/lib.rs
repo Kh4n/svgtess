@@ -2,11 +2,6 @@ extern crate cgmath;
 
 use cgmath::prelude::*;
 
-pub struct Vertex {
-        pos: [f32; 4],
-        color: [f32; 3]
-}
-
 pub fn is_to_right(v1: cgmath::Vector2<f32>, v2: cgmath::Vector2<f32>) -> bool {
     let v2r90 = cgmath::Vector2::new(-v2.y,  v2.x);
     (cgmath::dot(v1, v2r90) > 0.0)
@@ -42,6 +37,8 @@ pub fn path_tessellate(points: &Vec<cgmath::Vector2<f32>>, thickness: f32) -> (V
     let mut vector_dir2 = points[2] - points[1];
     let mut perpendicular1: cgmath::Vector2<f32>;
     let mut perpendicular2: cgmath::Vector2<f32>;
+    let mut pc1: cgmath::Vector2<f32> = cgmath::Vector2::new(0.0, 0.0);
+    let mut pd1: cgmath::Vector2<f32> = cgmath::Vector2::new(0.0, 0.0);
     if is_to_right(vector_dir1, vector_dir2) {
         perpendicular1 = cgmath::Vector2::<f32>::new(-vector_dir1.y, vector_dir1.x).normalize();
     } else {
@@ -53,7 +50,6 @@ pub fn path_tessellate(points: &Vec<cgmath::Vector2<f32>>, thickness: f32) -> (V
     vertices.push(pa0);
     vertices.push(pb0);
     v += 2;
-    let mut i = 0;
     for i in 0..(points.len() - 2) {
         vector_dir1 = points[i + 1] - points[i + 0];
         vector_dir2 = points[i + 2] - points[i + 1];
@@ -70,9 +66,9 @@ pub fn path_tessellate(points: &Vec<cgmath::Vector2<f32>>, thickness: f32) -> (V
         let pb1 = (perpendicular1 * -0.5 * thickness) + points[i + 1];
 
         let pc0 = (perpendicular2 * 0.5 * thickness) + points[i + 1];
-        let pc1 = (perpendicular2 * 0.5 * thickness) + points[i + 2];
+            pc1 = (perpendicular2 * 0.5 * thickness) + points[i + 2];
         let pd0 = (perpendicular2 * -0.5 * thickness) + points[i + 1];
-        let pd1 = (perpendicular2 * -0.5 * thickness) + points[i + 2];
+            pd1 = (perpendicular2 * -0.5 * thickness) + points[i + 2];
 
         //ij: innerjoint, oj: outerjoint, ojf: outeranchor first, ojs: outeranchor second
         let ij = intersection(pb0, pb1, pd0, pd1);
@@ -93,6 +89,14 @@ pub fn path_tessellate(points: &Vec<cgmath::Vector2<f32>>, thickness: f32) -> (V
             v - 2, v - 3, v - 4,
         ]);
     }
+    let len = points.len();
+    vertices.push(pc1);
+    vertices.push(pd1);
+    v += 2;
+    indices.extend(&[
+        v - 3, v - 1, v - 2, 
+        v - 2, v - 4, v - 3, 
+    ]);
     
     println!("{:?}", vertices);
     (vertices, indices)
