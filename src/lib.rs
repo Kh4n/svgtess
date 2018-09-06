@@ -8,8 +8,8 @@ pub fn is_to_right(v1: cgmath::Vector2<f32>, v2: cgmath::Vector2<f32>) -> bool {
 }
 
 fn intersection(
-    pa0: cgmath::Vector2<f32>, pa1: cgmath::Vector2<f32>, 
-    pb0: cgmath::Vector2<f32>, pb1: cgmath::Vector2<f32>
+    pa0: &cgmath::Vector2<f32>, pa1: &cgmath::Vector2<f32>, 
+    pb0: &cgmath::Vector2<f32>, pb1: &cgmath::Vector2<f32>
     ) -> cgmath::Vector2<f32> {
     let a1 = pa1.y - pa0.y;
     let b1 = pa0.x - pa1.x;
@@ -28,9 +28,9 @@ fn intersection(
 }
 
 pub fn path_tessellate(points: &Vec<cgmath::Vector2<f32>>, thickness: f32) -> (Vec<cgmath::Vector2<f32>>, Vec<u16>) {
-    let mut vertices = Vec::<cgmath::Vector2<f32>>::new();
+    let mut vertices = Vec::<cgmath::Vector2<f32>>::with_capacity(points.len() * 3);
     let mut indices = Vec::<u16>::new();
-    //t: short for triangles. need to keep track to offset the index buffer
+    //v: short for vertices, keeps track of points.len() without repeatedly calling it
     let mut v: u16 = 0;
 
     let mut vector_dir1 = points[1] - points[0];
@@ -71,8 +71,8 @@ pub fn path_tessellate(points: &Vec<cgmath::Vector2<f32>>, thickness: f32) -> (V
             pd1 = (perpendicular2 * -0.5 * thickness) + points[i + 2];
 
         //ij: innerjoint, oj: outerjoint, ojf: outeranchor first, ojs: outeranchor second
-        let ij = intersection(pb0, pb1, pd0, pd1);
-        let oj = intersection(pa0, pa1, pc0, pc1);
+        let ij = intersection(&pb0, &pb1, &pd0, &pd1);
+        let oj = intersection(&pa0, &pa1, &pc0, &pc1);
         let oaf = (perpendicular1 * thickness) + ij;
         let oas = (perpendicular2 * thickness) + ij;
 
@@ -89,7 +89,6 @@ pub fn path_tessellate(points: &Vec<cgmath::Vector2<f32>>, thickness: f32) -> (V
             v - 2, v - 3, v - 4,
         ]);
     }
-    let len = points.len();
     vertices.push(pc1);
     vertices.push(pd1);
     v += 2;
