@@ -2,6 +2,12 @@ extern crate cgmath;
 
 use cgmath::prelude::*;
 
+pub enum JointType {
+    Miter,
+    Bevel,
+    Round,
+}
+
 pub fn is_to_right(v1: cgmath::Vector2<f32>, v2: cgmath::Vector2<f32>) -> bool {
     let v2r90 = cgmath::Vector2::new(-v2.y,  v2.x);
     (cgmath::dot(v1, v2r90) > 0.0)
@@ -27,7 +33,7 @@ fn intersection(
     cgmath::Vector2::new(x, y)
 }
 
-pub fn path_tessellate(points: &Vec<cgmath::Vector2<f32>>, thickness: f32) -> (Vec<cgmath::Vector2<f32>>, Vec<u16>) {
+pub fn path_tessellate(points: &Vec<cgmath::Vector2<f32>>, thickness: f32, jtype: JointType) -> (Vec<cgmath::Vector2<f32>>, Vec<u16>) {
     let mut vertices = Vec::<cgmath::Vector2<f32>>::with_capacity(points.len() * 3);
     let mut indices = Vec::<u16>::new();
     //v: short for vertices, keeps track of points.len() without repeatedly calling it
@@ -72,22 +78,36 @@ pub fn path_tessellate(points: &Vec<cgmath::Vector2<f32>>, thickness: f32) -> (V
 
         //ij: innerjoint, oj: outerjoint, ojf: outeranchor first, ojs: outeranchor second
         let ij = intersection(&pb0, &pb1, &pd0, &pd1);
-        let oj = intersection(&pa0, &pa1, &pc0, &pc1);
         let oaf = (perpendicular1 * thickness) + ij;
         let oas = (perpendicular2 * thickness) + ij;
-
-        vertices.push(oaf);
-        vertices.push(oj);
-        vertices.push(oas);
-        vertices.push(ij);
-        v += 4;
-
-        indices.extend(&[
-            v - 6, v - 5, v - 1, 
-            v - 1, v - 4, v - 6, 
-            v - 1, v - 2, v - 4,
-            v - 2, v - 3, v - 4,
-        ]);
+        match jtype {
+            JointType::Miter => {
+                let oj = intersection(&pa0, &pa1, &pc0, &pc1);
+                vertices.push(oaf);
+                vertices.push(oj);
+                vertices.push(oas);
+                vertices.push(ij);
+                v += 4;
+                indices.extend(&[
+                    v - 6, v - 5, v - 1, 
+                    v - 1, v - 4, v - 6, 
+                    v - 1, v - 2, v - 4,
+                    v - 2, v - 3, v - 4,
+                ]);
+            }
+            JointType::Bevel => {
+                vertices.push(oaf);
+                vertices.push(oas);
+                vertices.push(ij);
+                v += 3;
+                indices.extend(&[
+                    v - 5, v - 4, v - 1, 
+                    v - 1, v - 3, v - 5, 
+                    v - 1, v - 2, v - 3,
+                ]);
+            }
+            _ => println!("NOT IMPLEMENTED")
+        }
     }
     vertices.push(pc1);
     vertices.push(pd1);

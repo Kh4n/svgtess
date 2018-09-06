@@ -54,19 +54,13 @@ pub fn main() {
     const BLACK: [f32; 4] = [0.0, 0.0, 0.0, 1.0];
 
     let mut encoder: gfx::Encoder<_, _> = factory.create_command_buffer().into();
-    /*let mut rect: [Vertex; 4] = [
-        Vertex { pos: [ -0.5, -0.5, 0.0, 1.0 ], color: [1.0, 0.0, 0.0] },
-        Vertex { pos: [  0.5, -0.5, 0.0, 1.0 ], color: [0.0, 1.0, 0.0] },
-        Vertex { pos: [  0.0,  0.5, 0.0, 1.0 ], color: [0.0, 0.0, 1.0] },
-        Vertex { pos: [  1.0,  1.0, 0.0, 1.0 ], color: [0.0, 0.0, 1.0] },
-        ];
-    const INDICES: &[u16] = &[0, 1, 2, 2, 1, 3];*/
 
     let line1 = vec![
         cgmath::Vector2::<f32>::new(0.0, 0.0), cgmath::Vector2::<f32>::new(0.8, 0.0), cgmath::Vector2::<f32>::new(0.8, -0.8),
         cgmath::Vector2::<f32>::new(0.4, -0.9), cgmath::Vector2::<f32>::new(0.4, -0.4)
         ];
-    let (ptess, pathindices) = path_tessellate(&line1, 0.05);
+
+    let (ptess, pathindices) = path_tessellate(&line1, 0.05, svgtess::JointType::Bevel);
     let mut pathtessellation = Vec::<Vertex>::new();
     for i in 0..ptess.len() {
         pathtessellation.push(Vertex { pos: [ptess[i].x, ptess[i].y, 0.0, 1.0], color: [1.0, 0.0, 0.0]});
