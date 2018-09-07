@@ -33,13 +33,12 @@ gfx_defines!{
 pub fn main() {
     let sdl_context = sdl2::init().unwrap();
     let video = sdl_context.video().unwrap();
-    let mut builder = video.window("Example", 800, 800);
-
     let gl_attr = video.gl_attr();
     gl_attr.set_context_profile(sdl2::video::GLProfile::Core);
     gl_attr.set_context_version(3, 2);
     gl_attr.set_multisample_buffers(1);
-    gl_attr.set_multisample_samples(4);
+    gl_attr.set_multisample_samples(16);
+    let mut builder = video.window("Example", 800, 800);
 
 
     let (mut window, mut gl_context, mut device, mut factory, color_view, depth_view) =
@@ -56,11 +55,11 @@ pub fn main() {
     let mut encoder: gfx::Encoder<_, _> = factory.create_command_buffer().into();
 
     let line1 = vec![
-        cgmath::Vector2::<f32>::new(0.0, 0.0), cgmath::Vector2::<f32>::new(0.8, 0.0), cgmath::Vector2::<f32>::new(0.8, -0.8),
-        cgmath::Vector2::<f32>::new(0.4, -0.9), cgmath::Vector2::<f32>::new(0.4, -0.4)
-        ];
+        cgmath::Vector2::<f32>::new(0.0, 0.0), cgmath::Vector2::<f32>::new(0.4, 0.0), cgmath::Vector2::<f32>::new(0.4, -0.4),
+        cgmath::Vector2::<f32>::new(0.8, -0.6)//, cgmath::Vector2::<f32>::new(0.8, -0.9)
+    ];
 
-    let (ptess, pathindices) = path_tessellate(&line1, 0.05, svgtess::JointType::Bevel);
+    let (ptess, pathindices) = path_tessellate(&line1, 0.05, svgtess::JointType::Round);
     let mut pathtessellation = Vec::<Vertex>::new();
     for i in 0..ptess.len() {
         pathtessellation.push(Vertex { pos: [ptess[i].x, ptess[i].y, 0.0, 1.0], color: [1.0, 0.0, 0.0]});
